@@ -4,7 +4,7 @@ use cargo::util::config::Config;
 use failure::{format_err, Fallible};
 use itertools::Itertools as _;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 use structopt::clap::AppSettings;
 use structopt::StructOpt;
 use strum::{EnumString, EnumVariantNames};
@@ -114,13 +114,18 @@ impl Locator {
             Locator::Version {
                 package_name,
                 version,
-            } => vec![format!("/{}-{}/", package_name, version)],
+            } => vec![format!(
+                "{sep}{}-{}{sep}",
+                package_name,
+                version,
+                sep = MAIN_SEPARATOR
+            )],
             Locator::Git {
                 package_name,
                 revision,
             } => vec![
-                format!("/{}", package_name),
-                format!("/{}/", &revision[0..7]),
+                format!("{sep}{}", package_name, sep = MAIN_SEPARATOR),
+                format!("{sep}{}{sep}", &revision[0..7], sep = MAIN_SEPARATOR),
             ],
         }
     }
